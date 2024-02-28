@@ -58,6 +58,9 @@ interleaving of two buffers into a stereo sample stream. Outputs 16-bit signed
 samples. Returns number of samples actually read.  */
 int blip_read_samples( blip_t*, short out [], int count, int stereo );
 
+
+int blip_read_samples_f( blip_t*, float out [], int count, int stereo );
+
 /** Frees buffer. No effect if NULL is passed. */
 void blip_delete( blip_t* );
 
