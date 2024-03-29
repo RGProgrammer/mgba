@@ -242,6 +242,42 @@ int blip_read_samples( blip_t* m, short out [], int count, int stereo )
 	return count;
 }
 
+
+int blip_read_samples_f(blip_t* m, float out[], int count, int stereo)
+{
+	assert(count >= 0);
+
+	if (count > m->avail)
+		count = m->avail;
+
+	if (count) {
+		int const step = stereo ? 2 : 1;
+		buf_t const* in = SAMPLES(m);
+		buf_t const* end = in + count;
+		int sum = m->integrator;
+		do {
+			/* Eliminate fraction */
+			int s = ARITH_SHIFT(sum, delta_bits);
+
+			sum += *in++;
+
+			CLAMP(s);
+
+			*out = (float) s / 32768;
+			out += step;
+
+			/* High-pass filter */
+			sum -= s << (delta_bits - bass_shift);
+		} while (in != end);
+		m->integrator = sum;
+
+		remove_samples(m, count);
+	}
+
+	return count;
+}
+
+
 /* Things that didn't help performance on x86:
 	__attribute__((aligned(128)))
 	#define short int
