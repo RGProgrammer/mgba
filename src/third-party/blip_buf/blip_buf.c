@@ -242,6 +242,7 @@ int blip_read_samples( blip_t* m, short out [], int count, int stereo )
 	return count;
 }
 
+
 int blip_read_samples_f(blip_t* m, float out[], int count, int stereo)
 {
 	assert(count >= 0);
@@ -275,7 +276,6 @@ int blip_read_samples_f(blip_t* m, float out[], int count, int stereo)
 
 	return count;
 }
-
 /* Things that didn't help performance on x86:
 	__attribute__((aligned(128)))
 	#define short int

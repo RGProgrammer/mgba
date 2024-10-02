@@ -25,12 +25,19 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(QT_LIBRARIES)
 
-set(QT_V 5)
-find_package(Qt${QT_V} COMPONENTS Core Widgets Network OPTIONAL_COMPONENTS Multimedia)
-if(QT_V GREATER_EQUAL 6)
-	find_package(Qt${QT_V} COMPONENTS OpenGL OpenGLWidgets)
-endif()
-set(QT Qt${QT_V})
+set(QT_VERSIONS 6 5)
+foreach(V ${QT_VERSIONS})
+	set(QT Qt${V})
+	set(QT_V ${V})
+	message("${V} ${QT} ${QT_V}")
+	find_package(${QT} COMPONENTS Core Widgets Network OPTIONAL_COMPONENTS Multimedia)
+	if(QT_V GREATER_EQUAL 6)
+		find_package(${QT} COMPONENTS OpenGL OpenGLWidgets)
+	endif()
+	if(${${QT}Widgets_FOUND})
+		break()
+	endif()
+endforeach()
 
 if(NOT BUILD_GL AND NOT BUILD_GLES2 AND NOT BUILD_GLES3)
 	message(WARNING "OpenGL is recommended to build the Qt port")
@@ -225,11 +232,8 @@ endif()
 if(${QT}Multimedia_FOUND)
 	list(APPEND AUDIO_SRC
 		AudioProcessorQt.cpp
-		AudioDevice.cpp)
-	if(QT_V LESS 6)
-		list(APPEND SOURCE_FILES
-			VideoDumper.cpp)
-	endif()
+		AudioDevice.cpp
+		VideoDumper.cpp)
 	if (WIN32 AND QT_STATIC)
 		list(APPEND QT_LIBRARIES ${QT}::QWindowsAudioPlugin ${QT}::DSServicePlugin ${QT}::QWindowsVistaStylePlugin ${QT}::QJpegPlugin
                                  strmiids mfuuid mfplat mf ksguid dxva2 evr d3d9)

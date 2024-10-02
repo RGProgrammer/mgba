@@ -111,7 +111,7 @@ static void GBAInit(void* cpu, struct mCPUComponent* component) {
 	gba->biosChecksum = GBAChecksum(gba->memory.bios, GBA_SIZE_BIOS);
 
 	gba->idleOptimization = IDLE_LOOP_REMOVE;
-	gba->idleLoop = IDLE_LOOP_NONE;
+	gba->idleLoop = GBA_IDLE_LOOP_NONE;
 
 	gba->vbaBugCompat = false;
 	gba->hardCrash = true;
@@ -165,7 +165,7 @@ void GBAUnloadROM(struct GBA* gba) {
 		gba->memory.savedata.realVf->close(gba->memory.savedata.realVf);
 		gba->memory.savedata.realVf = 0;
 	}
-	gba->idleLoop = IDLE_LOOP_NONE;
+	gba->idleLoop = GBA_IDLE_LOOP_NONE;
 }
 
 void GBADestroy(struct GBA* gba) {
@@ -469,10 +469,10 @@ bool GBALoadROM(struct GBA* gba, struct VFile* vf) {
 }
 
 bool GBALoadSave(struct GBA* gba, struct VFile* sav) {
-	enum SavedataType type = gba->memory.savedata.type;
+	enum GBASavedataType type = gba->memory.savedata.type;
 	GBASavedataDeinit(&gba->memory.savedata);
 	GBASavedataInit(&gba->memory.savedata, sav);
-	if (type != SAVEDATA_AUTODETECT) {
+	if (type != GBA_SAVEDATA_AUTODETECT) {
 		GBASavedataForceType(&gba->memory.savedata, type);
 	}
 	return sav;
